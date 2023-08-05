@@ -39,7 +39,6 @@ function convertToIPv4(ipAddress) {
         // If there's an error parsing the IP address, return the original IP address
         console.error('Error parsing IP address:', error);
     }
-    return ipAddress; // Return the original IP address if not convertible or an error occurs
 }
 
 app.listen(port, () => {
