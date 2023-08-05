@@ -1,4 +1,5 @@
 const express = require('express');
+const ipaddr = require('ipaddr.js');
 
 let app = express();
 const port = 8080;
@@ -11,11 +12,11 @@ app.use((req, res, next) => {
 app.use(express.json());
 
 app.post("/api", (req, res) => {
-    if(req.ip) {
+    if (req.ip) {
         res.status(200).send({
             "success": true,
             "error": "",
-            "ip": req.ip
+            "ip": convertToIPv4(req.ip)
         });
     } else {
         res.status(400).send({
@@ -25,6 +26,21 @@ app.post("/api", (req, res) => {
         });
     }
 });
+
+function convertToIPv4(ipAddress) {
+    try {
+        // Try parsing the IP address using the ipaddr.js library
+        const ip = ipaddr.parse(ipAddress);
+        if (ip.isIPv4MappedAddress()) {
+            // If it's an IPv4-mapped IPv6 address, return the corresponding IPv4 address
+            return ip.toIPv4Address().toString();
+        }
+    } catch (error) {
+        // If there's an error parsing the IP address, return the original IP address
+        console.error('Error parsing IP address:', error);
+    }
+    return ipAddress; // Return the original IP address if not convertible or an error occurs
+}
 
 app.listen(port, () => {
     console.log("IPget is online!");
